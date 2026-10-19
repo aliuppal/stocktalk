@@ -1,0 +1,7 @@
+# Never upload local secrets or CLI state when deploying from this machine.
+.env
+.env.*
+!.env.example
+.vercel
+node_modules
+*.log

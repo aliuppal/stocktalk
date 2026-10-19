@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Blog admin | StockTalk</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1218;--panel:#151922;--panel-2:#1b202b;--line:#252b37;--line-2:#333b4a;--text:#e9e4da;--muted:#a39b8e;--dim:#7a746b;
+      --accent:#8ea8ff;--accent-ink:#0b1020;--accent-soft:rgba(142,168,255,.1);--accent-line:rgba(142,168,255,.36);--down:#f0706a;--amber:#e0b057;
+      --font-display:'Inter',system-ui,sans-serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace}
+    *{box-sizing:border-box}html{color-scheme:dark}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display)}
+    button,input,textarea{font:inherit;color:inherit}
+    a{color:inherit}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+    h1{font:600 30px 'Newsreader',Georgia,serif;margin:0 0 6px}
+    .sub{color:var(--muted);font:500 12px var(--font-mono);margin:0 0 22px;line-height:1.6}
+    .login{display:flex;gap:8px;margin-bottom:8px}
+    input,textarea{width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:5px;padding:10px;font:13px var(--font-mono)}
+    input:focus,textarea:focus{outline:none;border-color:var(--accent-line)}
+    button{border:1px solid var(--line-2);background:var(--panel-2);border-radius:5px;padding:8px 12px;font:700 11.5px var(--font-mono);cursor:pointer;white-space:nowrap}
+    button:hover{border-color:var(--dim)}
+    button.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+    button.warn{color:var(--amber)}
+    button.del{color:var(--down)}
+    button:disabled{opacity:.5;cursor:default}
+    .sec{display:flex;align-items:baseline;gap:10px;font:700 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:28px 0 10px}
+    .sec small{font-weight:500;letter-spacing:0;text-transform:none;color:var(--dim)}
+    .row{border:1px solid var(--line);border-radius:6px;background:var(--panel);margin-bottom:8px}
+    .row-h{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px}
+    .row-h time{font:500 11px var(--font-mono);color:var(--dim)}
+    .row-h .t{min-width:0}
+    .row-h .t a{display:block;font-weight:600;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .row-h .t a:hover{color:var(--accent)}
+    .row-h .t small{font:500 10.5px var(--font-mono);color:var(--dim)}
+    .row.hidden-post .t a{color:var(--muted)}
+    .acts{display:flex;gap:6px}
+    .editor{border-top:1px solid var(--line);padding:4px 12px 14px}
+    label{display:block;font:600 10.5px var(--font-mono);letter-spacing:.06em;color:var(--muted);margin:12px 0 5px;text-transform:uppercase}
+    label small{color:var(--dim);font-weight:500;text-transform:none;letter-spacing:0}
+    textarea{min-height:360px;line-height:1.55;resize:vertical}
+    textarea.short{min-height:70px}
+    .ed-acts{display:flex;gap:8px;margin-top:12px}
+    .msg{font:600 12px var(--font-mono);padding:0 12px 10px}.msg:empty{display:none}.msg.ok{color:var(--accent)}.msg.err{color:var(--down)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;margin-bottom:18px}
+    .card img{display:block;width:100%;height:auto;aspect-ratio:1200/630;border-radius:4px;border:1px solid var(--line);margin-bottom:14px}
+    .meta{font:500 11px var(--font-mono);color:var(--dim)}
+    .kw{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.kw span{font:600 10.5px var(--font-mono);border:1px solid var(--line-2);border-radius:3px;padding:2px 6px;color:var(--muted)}
+    .empty{color:var(--muted);font:12px var(--font-mono);padding:22px;border:1px dashed var(--line-2);border-radius:6px;text-align:center;margin:0}
+    .bad{color:var(--down)}
+    @media(max-width:640px){.row-h{grid-template-columns:1fr}.acts{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Blog admin</h1>
+    <p class="sub">The daily Claude routine publishes market summaries automatically. Edit, hide or delete any post here. Changes appear on the site within about a minute.</p>
+    <form class="login" id="login"><input id="secret" type="password" placeholder="ADMIN_SECRET" autocomplete="current-password" aria-label="Admin secret"><button type="submit" class="pri">Load posts</button></form>
+    <p class="meta" id="login-msg" role="status"></p>
+
+    <div id="manage" hidden>
+      <h2 class="sec">Published <small id="pub-count"></small></h2>
+      <div id="published"></div>
+      <h2 class="sec">Hidden <small>off the site, kept for later</small></h2>
+      <div id="hidden"></div>
+      <h2 class="sec">Waiting for review <small>only used when BLOG_REQUIRE_REVIEW=true</small></h2>
+      <div id="pending"></div>
+    </div>
+  </div>
+
+  <script src="/admin.js" defer></script>
+</body>
+</html>

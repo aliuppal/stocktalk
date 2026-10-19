@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>try{var t=localStorage.getItem('st_theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <!--SSR:HEAD-->
+  <meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1218" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="alternate" type="application/rss+xml" title="StockTalk: Daily Pre-Market Brief" href="/blog/rss.xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!--SSR:GA-->
+  <style>
+    :root{
+      --bg:#f4efe6;--panel:#fbf8f2;--panel-2:#efe8dc;--line:#e2d9ca;--line-2:#cfc4b2;--rule:#1a1712;
+      --text:#1a1712;--text-strong:#0e0c09;--muted:#5e564b;--dim:#857b6d;--prose:#2a251e;
+      --accent:#1f3f8f;--accent-soft:rgba(31,63,143,.08);--accent-line:rgba(31,63,143,.32);
+      --up:#13794a;--down:#b3261e;--header-bg:rgba(244,239,230,.9);
+      --font-display:'Newsreader',Georgia,serif;--font-ui:'Inter',system-ui,sans-serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;
+      --radius:4px;--ease:cubic-bezier(.2,0,0,1);color-scheme:light;
+    }
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){
+        --bg:#0f1218;--panel:#151922;--panel-2:#1b202b;--line:#252b37;--line-2:#333b4a;--rule:#e9e4da;
+        --text:#e9e4da;--text-strong:#f7f3ec;--muted:#a39b8e;--dim:#7a746b;--prose:#d9d3c8;
+        --accent:#8ea8ff;--accent-soft:rgba(142,168,255,.1);--accent-line:rgba(142,168,255,.36);
+        --up:#3fbf7f;--down:#f0706a;--header-bg:rgba(15,18,24,.88);color-scheme:dark;
+      }
+    }
+    :root[data-theme="dark"]{
+      --bg:#0f1218;--panel:#151922;--panel-2:#1b202b;--line:#252b37;--line-2:#333b4a;--rule:#e9e4da;
+      --text:#e9e4da;--text-strong:#f7f3ec;--muted:#a39b8e;--dim:#7a746b;--prose:#d9d3c8;
+      --accent:#8ea8ff;--accent-soft:rgba(142,168,255,.1);--accent-line:rgba(142,168,255,.36);
+      --up:#3fbf7f;--down:#f0706a;--header-bg:rgba(15,18,24,.88);color-scheme:dark;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--font-ui);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+    .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+    header.top{position:sticky;top:0;z-index:5;background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:3px double var(--rule)}
+    .bar{height:60px;display:flex;align-items:center;gap:20px}
+    .logo{text-decoration:none;font:700 26px/1 var(--font-display);letter-spacing:-.02em;color:var(--text-strong)}
+    .logo i{font-style:italic;font-weight:500;color:var(--accent)}
+    .top nav{display:flex;gap:2px;font:600 13px var(--font-ui);margin-left:auto}
+    .top nav a{text-decoration:none;color:var(--muted);padding:6px 10px;border-radius:var(--radius)}
+    .top nav a:hover,.top nav a[aria-current]{color:var(--text-strong)}
+    .theme-btn{height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel);color:var(--muted);font:600 11px var(--font-mono);cursor:pointer}
+    .theme-btn:hover{color:var(--text)}
+    main{padding:32px 0 72px}
+    .crumbs{font:500 11.5px var(--font-mono);color:var(--dim);margin-bottom:22px}.crumbs a{color:var(--muted);text-decoration:none}.crumbs a:hover{color:var(--accent)}
+    .eyebrow{font:600 11px var(--font-mono);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+    h1{font:600 clamp(30px,4.2vw,48px)/1.08 var(--font-display);letter-spacing:-.018em;margin:0;color:var(--text-strong)}
+    h1 em{font-style:italic;color:var(--accent)}
+    .lede{color:var(--muted);font-size:16px;line-height:1.6;max-width:640px;margin:14px 0 0}
+    .blog-hero{margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
+    .rss-link{margin:14px 0 0;font:600 12px var(--font-ui)}
+    .rss-link a{color:var(--accent);text-decoration:none;border:1px solid var(--accent-line);border-radius:999px;padding:4px 11px}
+    .rss-link a:hover{background:var(--accent-soft)}
+    .post-list{display:grid}
+    .post-card{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
+    .post-card img{display:block;width:100%;height:auto;aspect-ratio:1200/630;border-radius:var(--radius);background:var(--panel-2);border:1px solid var(--line);transition:transform 200ms var(--ease)}
+    .post-card a:hover img{transform:translateY(-2px)}
+    .post-card time{font:500 11.5px var(--font-mono);color:var(--dim)}
+    .post-card h2{font:600 24px/1.2 var(--font-display);margin:6px 0 8px;letter-spacing:-.01em}.post-card h2 a{text-decoration:none}.post-card h2 a:hover{color:var(--accent)}
+    .post-card p{color:var(--muted);margin:0;font-size:14.5px;line-height:1.55}
+    .post-card{animation:rise 280ms var(--ease) both}
+    .post-card:nth-child(2){animation-delay:40ms}.post-card:nth-child(3){animation-delay:80ms}.post-card:nth-child(n+4){animation-delay:120ms}
+    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .post{max-width:740px;margin:0 auto}
+    .post-meta{font:500 12px var(--font-mono);color:var(--dim);margin:14px 0 24px}
+    .cover{display:block;width:100%;height:auto;aspect-ratio:1200/630;border-radius:var(--radius);border:1px solid var(--line);margin-bottom:30px;background:var(--panel)}
+    .prose{font:400 19px/1.66 var(--font-display);color:var(--prose)}
+    .prose h2{font:600 27px/1.25 var(--font-display);color:var(--text-strong);margin:40px 0 12px;letter-spacing:-.01em;padding-top:14px;border-top:1px solid var(--line)}
+    .prose h3{font:600 21px/1.3 var(--font-display);color:var(--text-strong);margin:28px 0 8px}
+    .prose p{margin:0 0 18px}
+    .prose a{color:var(--accent);text-underline-offset:3px;text-decoration-color:var(--accent-line)}
+    .prose a:hover{text-decoration-color:currentColor}
+    .prose strong{color:var(--text-strong);font-weight:600}
+    .prose ul,.prose ol{padding-left:22px;margin:0 0 18px}.prose li{margin:5px 0}
+    .prose blockquote{margin:20px 0;padding:6px 0 6px 18px;border-left:2px solid var(--accent);color:var(--muted);font-style:italic}
+    .prose table{width:100%;border-collapse:collapse;margin:18px 0 24px;font:500 13.5px var(--font-mono);font-variant-numeric:tabular-nums}
+    .prose th,.prose td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line)}
+    .prose th{color:var(--dim);font:600 10.5px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--rule)}
+    .prose code{font:500 .85em var(--font-mono);background:var(--panel-2);padding:1px 5px;border-radius:3px}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin:30px 0 0}.tags span{font:500 11.5px var(--font-ui);color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:3px 10px}
+    .disclaimer{font:500 11.5px var(--font-mono);color:var(--dim);margin:22px 0 0;line-height:1.6}
+    .back{margin-top:22px;font:600 13.5px var(--font-ui)}.back a{color:var(--accent);text-decoration:none}
+    .empty{color:var(--muted);font:14px var(--font-ui);padding:40px;border:1px dashed var(--line-2);border-radius:var(--radius);text-align:center}
+    footer{border-top:3px double var(--rule);padding:18px 0 28px;font:500 11px var(--font-mono);color:var(--dim)}
+    @media(max-width:720px){.wrap{padding:0 16px}.post-card{grid-template-columns:1fr;gap:12px}.prose{font-size:17.5px}.top nav a{padding:6px 7px}.logo{font-size:22px}}
+    @media(prefers-reduced-motion:reduce){.post-card{animation:none}.post-card img{transition:none}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap bar">
+    <a class="logo" href="/">Stock<i>Talk</i></a>
+    <nav aria-label="Primary"><a href="/">Front page</a><a href="/blog" aria-current="page">Morning note</a></nav>
+    <button class="theme-btn" id="theme-btn" type="button">Paper</button>
+  </div></header>
+  <main class="wrap"><!--SSR:MAIN--></main>
+  <footer><div class="wrap">© 2026 STOCKTALK · MARKET DATA MAY BE DELAYED · NOT FINANCIAL ADVICE</div></footer>
+  <script>
+    // Theme toggle (shared with the homepage): Paper (light) <-> Ink (dark); follows the OS until chosen.
+    (function () {
+      var btn = document.getElementById('theme-btn'), root = document.documentElement;
+      function mode() { var t = root.dataset.theme; return t === 'light' || t === 'dark' ? t : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+      function paint() {
+        var m = mode();
+        btn.textContent = m === 'dark' ? 'Ink' : 'Paper';
+        btn.setAttribute('aria-label', 'Theme: ' + (m === 'dark' ? 'ink (dark)' : 'paper (light)') + '. Switch.');
+      }
+      btn.addEventListener('click', function () {
+        var next = mode() === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('st_theme', next); } catch (e) {}
+        paint();
+      });
+      paint();
+    })();
+  </script>
+</body>
+</html>

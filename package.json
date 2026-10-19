@@ -1,0 +1,17 @@
+{
+  "name": "stocktalk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node --env-file=.env scripts/scrape.js",
+    "dev": "node --env-file=.env scripts/dev.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
+    "fast-xml-parser": "^5.11.2",
+    "marked": "^15.0.12"
+  }
+}
