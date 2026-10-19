@@ -37,7 +37,7 @@
       --up:#13794a;--down:#b3261e;--up-soft:rgba(19,121,74,.1);--down-soft:rgba(179,38,30,.09);
       --k-markets:#0f6e7a;--k-earnings:#8a5a00;--k-macro:#1f3f8f;--k-tech:#5b3fa0;--k-policy:#9b3d1f;--k-companies:#4f5b66;
       --ticker-bg:#1a1712;--ticker-text:#efe8dc;--ticker-dim:#a39b8e;--header-bg:rgba(244,239,230,.9);
-      --sk:rgba(26,23,18,.07);--sk-shine:rgba(255,255,255,.55);--shadow:0 1px 0 rgba(26,23,18,.04),0 10px 28px -18px rgba(26,23,18,.35);
+      --grid:rgba(26,23,18,.045);--sk:rgba(26,23,18,.07);--sk-shine:rgba(255,255,255,.55);--shadow:0 1px 0 rgba(26,23,18,.04),0 10px 28px -18px rgba(26,23,18,.35);
       --font-display:'Newsreader',Georgia,'Times New Roman',serif;--font-ui:'Inter',system-ui,sans-serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;
       --radius:4px;--ease:cubic-bezier(.2,0,0,1);--fast:150ms;--base:280ms;
       color-scheme:light;
@@ -50,7 +50,7 @@
         --up:#3fbf7f;--down:#f0706a;--up-soft:rgba(63,191,127,.12);--down-soft:rgba(240,112,106,.12);
         --k-markets:#5cc8d4;--k-earnings:#e0b057;--k-macro:#8ea8ff;--k-tech:#b9a2f0;--k-policy:#f0956f;--k-companies:#a7b1bb;
         --ticker-bg:#080a0e;--ticker-text:#e9e4da;--ticker-dim:#7a746b;--header-bg:rgba(15,18,24,.88);
-        --sk:rgba(255,255,255,.06);--sk-shine:rgba(255,255,255,.05);--shadow:0 12px 32px -18px rgba(0,0,0,.8);
+        --grid:rgba(255,255,255,.028);--sk:rgba(255,255,255,.06);--sk-shine:rgba(255,255,255,.05);--shadow:0 12px 32px -18px rgba(0,0,0,.8);
         color-scheme:dark;
       }
     }
@@ -61,7 +61,7 @@
       --up:#3fbf7f;--down:#f0706a;--up-soft:rgba(63,191,127,.12);--down-soft:rgba(240,112,106,.12);
       --k-markets:#5cc8d4;--k-earnings:#e0b057;--k-macro:#8ea8ff;--k-tech:#b9a2f0;--k-policy:#f0956f;--k-companies:#a7b1bb;
       --ticker-bg:#080a0e;--ticker-text:#e9e4da;--ticker-dim:#7a746b;--header-bg:rgba(15,18,24,.88);
-      --sk:rgba(255,255,255,.06);--sk-shine:rgba(255,255,255,.05);--shadow:0 12px 32px -18px rgba(0,0,0,.8);
+      --grid:rgba(255,255,255,.028);--sk:rgba(255,255,255,.06);--sk-shine:rgba(255,255,255,.05);--shadow:0 12px 32px -18px rgba(0,0,0,.8);
       color-scheme:dark;
     }
     *{box-sizing:border-box}
@@ -76,6 +76,13 @@
     .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
     svg.i{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
     .up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+
+    /* ---- background: graph paper + faint price lines tracing across it (drawn in JS) ---- */
+    .bg-chart{position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;
+      background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+    .ticker,.masthead,main,footer{position:relative;z-index:1}
+    /* Data areas sit on solid paper so the decorative lines never read as real prices. */
+    .board,.feed,.timeline-card{background:var(--bg)}
 
     /* ---- ticker tape ---- */
     .ticker{height:34px;background:var(--ticker-bg);color:var(--ticker-text);display:flex;align-items:center;font:500 11.5px var(--font-mono);font-variant-numeric:tabular-nums}
@@ -376,6 +383,7 @@
   </style>
 </head>
 <body>
+  <canvas class="bg-chart" id="bg-chart" aria-hidden="true"></canvas>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
@@ -387,7 +395,7 @@
   </svg>
 
   <div class="ticker" id="ticker" aria-label="US indices, futures, rates and commodities">
-    <button class="tape-btn" id="tape-btn" type="button" aria-label="Pause the price ticker" aria-pressed="false"><svg><use href="#i-pause"/></svg></button>
+    <button class="tape-btn" id="tape-btn" type="button" aria-label="Pause moving content (ticker and background)" title="Pause motion" aria-pressed="false"><svg><use href="#i-pause"/></svg></button>
     <div class="ticker-viewport"><div class="ticker-track" id="ticker-track" aria-busy="true"><span class="tk"><span class="sk" style="--w:140px"></span></span><span class="tk"><span class="sk" style="--w:140px"></span></span><span class="tk"><span class="sk" style="--w:140px"></span></span><span class="tk"><span class="sk" style="--w:140px"></span></span><span class="tk"><span class="sk" style="--w:140px"></span></span><span class="tk"><span class="sk" style="--w:140px"></span></span></div></div>
     <div class="ticker-stats" id="ticker-stats"></div>
   </div>
@@ -609,13 +617,95 @@
     });
     paintThemeBtn();
 
-    // ---------- ticker pause (WCAG 2.2.2: moving content needs a pause control) ----------
-    $('#tape-btn').addEventListener('click', () => {
-      const paused = $('#ticker').classList.toggle('paused');
+    // ---------- motion pause (WCAG 2.2.2: moving content needs a pause control) ----------
+    // One button pauses both the ticker tape and the background price lines; the choice is remembered.
+    let motionPaused = false;
+    function setMotionPaused(paused) {
+      motionPaused = paused;
+      $('#ticker').classList.toggle('paused', paused);
       $('#tape-btn').innerHTML = `<svg><use href="#i-${paused ? 'play' : 'pause'}"/></svg>`;
-      $('#tape-btn').setAttribute('aria-label', paused ? 'Play the price ticker' : 'Pause the price ticker');
+      $('#tape-btn').setAttribute('aria-label', paused ? 'Resume moving content (ticker and background)' : 'Pause moving content (ticker and background)');
       $('#tape-btn').setAttribute('aria-pressed', String(paused));
-    });
+    }
+    $('#tape-btn').addEventListener('click', () => { setMotionPaused(!motionPaused); store.set('st_motion_paused', motionPaused); });
+    setMotionPaused(store.get('st_motion_paused', false) === true);
+
+    // ---------- background: faint price lines tracing across the graph paper ----------
+    // Two or three random-walk "intraday charts" draw left to right over ~10 s with a head dot and a
+    // dotted previous-close baseline, hold, fade, and respawn elsewhere. Green if the walk ends above
+    // where it started, red if below. Ambient, so: low opacity, ~30 fps, paused when the tab is hidden
+    // or motion is paused, and not started at all for reduced-motion users (the grid stays, static).
+    function startBgChart() {
+      if (reduceMotion) return;
+      const canvas = $('#bg-chart'), ctx = canvas.getContext('2d');
+      let W = 0, H = 0;
+      const resize = () => {
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        W = innerWidth; H = innerHeight;
+        canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      resize();
+      addEventListener('resize', resize);
+      const readColors = () => { const s = getComputedStyle(document.documentElement); return { up: s.getPropertyValue('--up').trim(), down: s.getPropertyValue('--down').trim() }; };
+      let colors = readColors();
+      new MutationObserver(() => (colors = readColors())).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => (colors = readColors()));
+
+      const N = 96;
+      function makeLine(delay) {
+        let y = 0, v = 0;
+        const drift = (Math.random() - 0.5) * 0.5, raw = [];
+        for (let i = 0; i < N; i++) { v = v * 0.82 + (Math.random() - 0.5) * 1.3 + drift * 0.2; y += v; raw.push(y); }
+        const lo = Math.min(...raw), hi = Math.max(...raw) || 1;
+        const band = H * (0.12 + Math.random() * 0.16);
+        const top = H * 0.08 + Math.random() * Math.max(1, H * 0.84 - band);
+        // Screen y grows downward, so a higher price is a smaller y.
+        const pts = raw.map((p) => top + band - ((p - lo) / (hi - lo || 1)) * band);
+        return { pts, up: raw[N - 1] >= raw[0], t0: performance.now() + delay, draw: 9000 + Math.random() * 5000, hold: 2500, fade: 1600 };
+      }
+      let lines = Array.from({ length: innerWidth < 720 ? 2 : 3 }, (_, i) => makeLine(i * 2800));
+      let last = 0, pausedAt = 0;
+
+      function frame(now) {
+        requestAnimationFrame(frame);
+        if (motionPaused || document.hidden) { if (!pausedAt) pausedAt = now; return; }
+        // Shift every line's clock by the time spent paused so nothing jumps on resume.
+        if (pausedAt) { const gap = now - pausedAt; lines.forEach((L) => (L.t0 += gap)); pausedAt = 0; }
+        if (now - last < 33) return;
+        last = now;
+        ctx.clearRect(0, 0, W, H);
+        lines = lines.map((L) => (now - L.t0 > L.draw + L.hold + L.fade ? makeLine(500 + Math.random() * 2500) : L));
+        const step = W / (N - 1);
+        for (const L of lines) {
+          const t = now - L.t0;
+          if (t < 0) continue;
+          const p = Math.min(1, t / L.draw);
+          const alpha = t > L.draw + L.hold ? Math.max(0, 1 - (t - L.draw - L.hold) / L.fade) : 1;
+          const k = p * (N - 1), i0 = Math.floor(k), f = k - i0;
+          const hx = (i0 + (i0 < N - 1 ? f : 0)) * step;
+          const hy = i0 < N - 1 ? L.pts[i0] + f * (L.pts[i0 + 1] - L.pts[i0]) : L.pts[N - 1];
+          const color = L.up ? colors.up : colors.down;
+          ctx.strokeStyle = ctx.fillStyle = color;
+          // dotted previous-close baseline
+          ctx.globalAlpha = 0.09 * alpha; ctx.lineWidth = 1; ctx.setLineDash([2, 5]);
+          ctx.beginPath(); ctx.moveTo(0, L.pts[0]); ctx.lineTo(hx, L.pts[0]); ctx.stroke(); ctx.setLineDash([]);
+          // the price line itself
+          ctx.globalAlpha = 0.18 * alpha; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
+          ctx.beginPath(); ctx.moveTo(0, L.pts[0]);
+          for (let i = 1; i <= i0; i++) ctx.lineTo(i * step, L.pts[i]);
+          ctx.lineTo(hx, hy); ctx.stroke();
+          // head dot while drawing (steady, no blinking)
+          if (p < 1) {
+            ctx.globalAlpha = 0.1 * alpha; ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 0.45 * alpha; ctx.beginPath(); ctx.arc(hx, hy, 2.5, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+        ctx.globalAlpha = 1;
+      }
+      requestAnimationFrame(frame);
+    }
+    startBgChart();
 
     // ---------- state ----------
     let stories = [], sources = [], filter = 'top', view = 'top', sort = 'rank', query = '';
