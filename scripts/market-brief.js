@@ -1,7 +1,7 @@
 // Collects today's facts from the live StockTalk APIs into one JSON brief.
 // The blog routine writes ONLY from this file, so every number in a post is
 // traceable to a real source. Usage: node scripts/market-brief.js > brief.json
-const BASE = process.env.STOCKTALK_URL || 'https://stocktalk.vercel.app';
+const BASE = process.env.STOCKTALK_URL || 'https://stocktalk-rosy.vercel.app';
 
 async function get(path) {
   try {

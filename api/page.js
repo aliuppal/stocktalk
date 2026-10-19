@@ -32,7 +32,7 @@ function gaSnippet() {
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}');</script>`;
 }
 // Templates hard-code the default origin; swap in SITE so a custom domain only needs SITE_URL.
-const tpl = async (name) => (await loadTpl(name)).replaceAll('https://stocktalk.vercel.app', SITE).replace('<!--SSR:GA-->', gaSnippet());
+const tpl = async (name) => (await loadTpl(name)).replaceAll('https://stocktalk-rosy.vercel.app', SITE).replace('<!--SSR:GA-->', gaSnippet());
 
 // ---------- home ----------
 function feedHtml(stories) {

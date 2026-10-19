@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs';
 
 const [draftPath, coverPath, briefPath] = process.argv.slice(2);
-const BASE = process.env.STOCKTALK_URL || 'https://stocktalk.vercel.app';
+const BASE = process.env.STOCKTALK_URL || 'https://stocktalk-rosy.vercel.app';
 if (!draftPath || !process.env.BLOG_SECRET) {
   console.error('usage: BLOG_SECRET=... node scripts/blog-submit.js draft.json [cover.png] [brief.json]');
   process.exit(1);
