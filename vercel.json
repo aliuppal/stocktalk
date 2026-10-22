@@ -2,12 +2,12 @@
   "outputDirectory": "public",
   "crons": [
     {
-      "path": "/api/cron/scrape?slot=12utc",
-      "schedule": "45 12 * * *"
+      "path": "/api/cron/scrape?slot=morning",
+      "schedule": "0 12 * * *"
     },
     {
-      "path": "/api/cron/scrape?slot=13utc",
-      "schedule": "45 13 * * *"
+      "path": "/api/cron/scrape?slot=afternoon",
+      "schedule": "0 20 * * *"
     }
   ],
   "rewrites": [

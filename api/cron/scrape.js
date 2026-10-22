@@ -1,15 +1,25 @@
 import { timingSafeEqual } from 'node:crypto';
 import { runDailyScrape } from '../../lib/scrape.js';
+import { sql } from '../../lib/db.js';
 
-// Runs once a day at 8:45 AM New York time, so fresh news is in place before the
-// 9 AM blog routine writes its market summary. Vercel Cron only speaks UTC and
-// New York shifts between UTC-4 (EDT) and UTC-5 (EST), so vercel.json fires
-// at both 12:45 and 13:45 UTC and the slot that isn't in the 8 AM hour there is
-// skipped. (On the Hobby plan Vercel may start a cron anywhere in its hour.)
+// Scrapes twice a day (vercel.json):
+//   12:00 UTC = 8 AM New York in summer (EDT), 7 AM in winter (EST): fresh news before the 9 AM note
+//   20:00 UTC = 4 PM / 3 PM New York: the afternoon's stories
+// On the Hobby plan Vercel can start a cron up to about an hour after its scheduled time,
+// so there is deliberately no exact-hour check (that check made every run skip). Even a
+// late 12:00 run lands before 9 AM New York. A scheduled call only skips when a scrape
+// already ran in the last few hours (retries / duplicate fires).
 // Vercel sends `Authorization: Bearer $CRON_SECRET` when that env var is set.
-const RUN_HOUR_NY = 8;
-const nyHour = (d = new Date()) =>
-  Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(d));
+const MIN_GAP_HOURS = 4;
+
+async function hoursSinceLastRun() {
+  try {
+    const [row] = await sql()`select ran_at from scrape_runs order by ran_at desc limit 1`;
+    return row ? (Date.now() - new Date(row.ran_at).getTime()) / 3600e3 : Infinity;
+  } catch {
+    return Infinity;   // table missing on a fresh database: runDailyScrape creates it
+  }
+}
 
 export default async function handler(req, res) {
   // Fail closed: without CRON_SECRET nothing can trigger a scrape (user-agents are spoofable).
@@ -21,9 +31,11 @@ export default async function handler(req, res) {
 
   // Scheduled calls carry ?slot=…; a manual call without it always runs.
   const scheduled = new URL(req.url, 'http://localhost').searchParams.has('slot');
-  const hour = nyHour();
-  if (scheduled && hour !== RUN_HOUR_NY) {
-    return res.status(200).json({ ok: true, skipped: true, reason: `New York hour is ${hour}, runs at ${RUN_HOUR_NY}` });
+  if (scheduled) {
+    const gap = await hoursSinceLastRun();
+    if (gap < MIN_GAP_HOURS) {
+      return res.status(200).json({ ok: true, skipped: true, reason: `last scrape ${gap.toFixed(1)}h ago (< ${MIN_GAP_HOURS}h)` });
+    }
   }
 
   try {
