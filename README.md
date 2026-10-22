@@ -10,7 +10,7 @@ Built on the same stack as BlockTalk: Vercel serverless functions, Neon Postgres
 
 | Path | What it does |
 |---|---|
-| `api/cron/scrape.js` | Scrapes twice a day: 12:00 UTC (7–8 AM New York, before the 9 AM note) and 20:00 UTC (afternoon). No exact-hour check, since Hobby crons can start up to an hour late; a scheduled call skips only if a scrape ran in the last 4 hours. |
+| `api/cron/scrape.js` | Scrapes twice a day on New York time: ~8:45 AM and after 5 PM. Each slot fires at two UTC times (12:45/13:45 and 21:15/22:15) to cover EDT and EST; a call runs only inside its New York window and if no scrape ran in the last 4 hours. |
 | `lib/sources.js`, `lib/feeds.js`, `lib/rank.js` | Newsroom feeds, the US-stocks-only relevance filter, story clustering and ranking. |
 | `api/prices.js` | S&P 500, Nasdaq, Dow, Russell 2000 (with sparklines), their futures, VIX, 10Y yield, DXY, gold, oil. |
 | `api/radar.js` | The 11 S&P 500 sectors via SPDR ETFs, plus breadth. |

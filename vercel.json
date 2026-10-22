@@ -3,11 +3,19 @@
   "crons": [
     {
       "path": "/api/cron/scrape?slot=morning",
-      "schedule": "0 12 * * *"
+      "schedule": "45 12 * * *"
     },
     {
-      "path": "/api/cron/scrape?slot=afternoon",
-      "schedule": "0 20 * * *"
+      "path": "/api/cron/scrape?slot=morning",
+      "schedule": "45 13 * * *"
+    },
+    {
+      "path": "/api/cron/scrape?slot=evening",
+      "schedule": "15 21 * * *"
+    },
+    {
+      "path": "/api/cron/scrape?slot=evening",
+      "schedule": "15 22 * * *"
     }
   ],
   "rewrites": [
