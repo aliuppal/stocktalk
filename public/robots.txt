@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin
 
-Sitemap: https://stocktalk-rosy.vercel.app/sitemap.xml
+Sitemap: https://www.stocktalk.website/sitemap.xml
